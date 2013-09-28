@@ -1,7 +1,7 @@
 /*------------------- 
 a player entity
 -------------------------------- */
-game.PlayerEntity = me.ObjectEntity.extend({
+game.AGravSupportEntity = me.ObjectEntity.extend({
                 // Overload this so antigravity works properly
                 computeVelocity : function(vel) {
 
@@ -127,8 +127,10 @@ game.PlayerEntity = me.ObjectEntity.extend({
 			// returns the collision "vector"
 			return collision;
 
-		},
- 
+		}
+});
+
+game.PlayerEntity = game.AGravSupportEntity.extend({
     /* -----
  
     constructor
@@ -180,7 +182,6 @@ game.PlayerEntity = me.ObjectEntity.extend({
         }
         if (me.input.isKeyPressed('jump')) {
             // make sure we are not already jumping or falling
-            console.log(this.jumping, this.falling);
             if (!this.jumping && !this.falling) {
                 // set current vel to the maximum defined value
                 // gravity will then do the rest
@@ -188,7 +189,6 @@ game.PlayerEntity = me.ObjectEntity.extend({
                     this.vel.y = -this.maxVel.y * me.timer.tick;
                 else 
                     this.vel.y = +this.maxVel.y * me.timer.tick;
-                console.log(this.vel.y);
                 // set the jumping flag
                 this.jumping = true;
             }
@@ -208,6 +208,25 @@ game.PlayerEntity = me.ObjectEntity.extend({
         // else inform the engine we did not perform
         // any update (e.g. position, animation)
         return false;
+    },
+    
+    updateMovement: function() {
+        var collision;
+        if (this.collidable) {
+            collision = this.collisionMap.checkCollision(this.collisionBox, this.vel);
+            var tile;
+            if (collision.xprop.type == 'collectable') {
+                tile = collision.xtile;
+            }
+            if (tile) {
+                console.log(tile);
+                me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
+                me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
+            }
+        }
+        this.parent()
+        //var tw = 40;
+            //console.log(tile.tileId == 18);
     }
  
 });
