@@ -32,7 +32,7 @@
   </data>
  </layer>
  <objectgroup name="Object Layer 1" width="20" height="16">
-  <object name="mainPlayer" x="32" y="64" width="32" height="32">
+  <object name="mainPlayer" x="32" y="96" width="32" height="32">
    <properties>
     <property name="grav" value="1"/>
     <property name="image" value="tiles"/>

@@ -61,9 +61,8 @@ game.AGravSupportEntity = me.ObjectEntity.extend({
                                                         if (this.gravity > 0) {
                                                             this.vel.y = (this.falling) ?collision.ytile.pos.y - this.collisionBox.bottom: 0 ;
                                                         }else {
-                                                            // FIXME
-                                                            this.vel.y = 0;
-                                                            }
+                                                            this.vel.y = (this.falling) ?collision.ytile.pos.y + 32 - this.collisionBox.top: 0 ;
+                                                        }
 							this.falling = false;
 						}
 						else if (collision.yprop.isSlope && !this.jumping) {
