@@ -258,10 +258,18 @@ game.PlayerEntity = game.ModObjectEntity.extend({
                     prop = collision.yprop;
                 }
                 if (prop.type == 'lowdeath') {
-                    if(this.pos.y + 16 > tile.pos.y) me.levelDirector.reloadLevel();
+                    if(this.pos.y + 16 > tile.pos.y) {
+                        me.levelDirector.reloadLevel();
+                        // FIXME
+                        me.game.viewport.pos.y = 32;
+                    }
                 }
                 if (prop.type == 'highdeath') {
-                    if(this.pos.y - 16 < tile.pos.y) me.levelDirector.reloadLevel();
+                    if(this.pos.y - 16 < tile.pos.y) {
+                        me.levelDirector.reloadLevel();
+                        // FIXME
+                        me.game.viewport.pos.y = 32;
+                    }
                 }
             }
             this.parent(collision);
