@@ -213,15 +213,21 @@ game.PlayerEntity = game.AGravSupportEntity.extend({
     updateMovement: function() {
         var collision;
         if (this.collidable) {
+            this.computeVelocity(this.vel);
             collision = this.collisionMap.checkCollision(this.collisionBox, this.vel);
             var tile;
             if (collision.xprop.type == 'collectable') {
                 tile = collision.xtile;
+                if (tile) {
+                    me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
+                    me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
+                }
             }
-            if (tile) {
-                console.log(tile);
-                me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
-                me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
+            if (collision.xprop.type == 'exit') {
+                tile = collision.xtile;
+                if (tile) {
+                    me.levelDirector.loadLevel("level2");
+                }
             }
         }
         this.parent()
