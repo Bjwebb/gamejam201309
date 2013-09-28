@@ -1,7 +1,7 @@
 /*------------------- 
 a player entity
 -------------------------------- */
-game.AGravSupportEntity = me.ObjectEntity.extend({
+game.ModObjectEntity = me.ObjectEntity.extend({
                 // Overload this so antigravity works properly
                 computeVelocity : function(vel) {
 
@@ -30,7 +30,7 @@ game.AGravSupportEntity = me.ObjectEntity.extend({
 			if (vel.x !== 0)
 				vel.x = vel.x.clamp(-this.maxVel.x,this.maxVel.x);
 		},
-		updateMovement : function() {
+		updateMovement : function(collision /*FIXME*/) {
 
 			this.computeVelocity(this.vel);
 
@@ -38,7 +38,7 @@ game.AGravSupportEntity = me.ObjectEntity.extend({
 			var collision;
 			if (this.collidable) {
 				// check for collision
-				collision = this.collisionMap.checkCollision(this.collisionBox, this.vel);
+				//collision = this.collisionMap.checkCollision(this.collisionBox, this.vel);
 
 				// update some flags
 				this.onslope  = collision.yprop.isSlope || collision.xprop.isSlope;
@@ -112,7 +112,7 @@ game.AGravSupportEntity = me.ObjectEntity.extend({
 								if (this.onTileBreak) {
 									this.onTileBreak();
 								}
-							} else {
+							} else if (collision.xprop.type != 'lowdeath') {
 								this.vel.x = 0;
 							}
 						}
@@ -129,7 +129,7 @@ game.AGravSupportEntity = me.ObjectEntity.extend({
 		}
 });
 
-game.PlayerEntity = game.AGravSupportEntity.extend({
+game.PlayerEntity = game.ModObjectEntity.extend({
     /* -----
  
     constructor
@@ -144,21 +144,23 @@ game.PlayerEntity = game.AGravSupportEntity.extend({
         this.setVelocity(3, 15);
         
         if (settings.grav == 1) {
-            this.gravity = 0.98;
-            this.renderable.addAnimation("walk", [14,15,16]);
+            this.gravity = 0.2;
+            var tw = 0;
         }
         if (settings.grav == -1) {
-            this.gravity = -0.98;
+            this.gravity = -0.2;
             var tw = 40;
-            this.renderable.addAnimation("walk", [tw+14,tw+15,tw+16]);
         }
-        this.renderable.setCurrentAnimation("walk");
+        this.renderable.addAnimation("stay", [tw+14,tw+15], 20);
+        this.renderable.addAnimation("walk", [tw+14,tw+15,tw+16,tw+15], 8);
+        this.renderable.setCurrentAnimation("stay");
+
+        this.updateColRect(10, 12, 0, 32);
 
         // set the display to follow our position on both axis
         //me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
 
-
-        this.maxVel.y = this.maxVel.y * 1.5;
+        this.maxVel.y = 10;
     },
  
     /* -----
@@ -193,22 +195,35 @@ game.PlayerEntity = game.AGravSupportEntity.extend({
                 // set the jumping flag
                 this.jumping = true;
             }
- 
         }
+        /*
+        else {
+            if (this.jumping) {
+                this.jumping = false;
+                this.falling = true;
+                this.vel.y = 0;
+            }
+        }
+        */
  
         // check & update player movement
         this.updateMovement();
  
         // update animation if necessary
         if (this.vel.x!=0 || this.vel.y!=0) {
-            // update object animation
-            this.parent();
-            return true;
+            if (!this.renderable.isCurrentAnimation('walk')) this.renderable.setCurrentAnimation('walk');
         }
+        else {
+            if (!this.renderable.isCurrentAnimation('stay')) this.renderable.setCurrentAnimation('stay');
+        }
+
+        // update object animation
+        this.parent();
+        return true;
          
         // else inform the engine we did not perform
         // any update (e.g. position, animation)
-        return false;
+        //return false;
     },
     
     updateMovement: function() {
@@ -219,19 +234,38 @@ game.PlayerEntity = game.AGravSupportEntity.extend({
             var tile;
             if (collision.xprop.type == 'collectable') {
                 tile = collision.xtile;
-                if (tile) {
-                    me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
-                    me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
-                }
+                me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
+                me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
             }
             if (collision.xprop.type == 'exit') {
                 tile = collision.xtile;
-                if (tile) {
+                // FIXME
+                if (me.levelDirector.getCurrentLevelId() == "level1")
                     me.levelDirector.loadLevel("level2");
+                else {
+                    me.levelDirector.loadLevel("level1");
+                    me.game.viewport.pos.y = 32;
                 }
             }
+            for (i=0; i<2; i++) {
+                if (i==0) {
+                    if(!collision.x) continue;
+                    tile = collision.xtile;
+                    prop = collision.xprop;
+                } else {
+                    if(!collision.y) continue;
+                    tile = collision.ytile;
+                    prop = collision.yprop;
+                }
+                if (prop.type == 'lowdeath') {
+                    if(this.pos.y + 16 > tile.pos.y) me.levelDirector.reloadLevel();
+                }
+                if (prop.type == 'highdeath') {
+                    if(this.pos.y - 16 < tile.pos.y) me.levelDirector.reloadLevel();
+                }
+            }
+            this.parent(collision);
         }
-        this.parent()
         //var tw = 40;
             //console.log(tile.tileId == 18);
     }

@@ -9,12 +9,12 @@ var game = {
             return;
         }
 		
-		// add "#debug" to the URL to enable the debug Panel
-		if (document.location.hash === "#debug") {
-			window.onReady(function () {
-				me.plugin.register.defer(debugPanel, "debug");
-			});
-		}
+        // add "#debug" to the URL to enable the debug Panel
+        if (document.location.hash === "#debug") {
+                window.onReady(function () {
+                        me.plugin.register.defer(debugPanel, "debug");
+                });
+        }
 
         // Initialize the audio.
         me.audio.init("mp3,ogg");
@@ -37,13 +37,13 @@ var game = {
         me.state.set(me.state.MENU, new game.TitleScreen());
         me.state.set(me.state.PLAY, new game.PlayScreen());
 
-       // add our player entity in the entity pool
-       me.entityPool.add("mainPlayer", game.PlayerEntity);
+        // add our player entity in the entity pool
+        me.entityPool.add("mainPlayer", game.PlayerEntity);
                  
-       // enable the keyboard
-       me.input.bindKey(me.input.KEY.LEFT,  "left");
-       me.input.bindKey(me.input.KEY.RIGHT, "right");
-       me.input.bindKey(me.input.KEY.UP,     "jump");
+        // enable the keyboard
+        me.input.bindKey(me.input.KEY.LEFT,  "left");
+        me.input.bindKey(me.input.KEY.RIGHT, "right");
+        me.input.bindKey(me.input.KEY.UP,     "jump");
 
         // Start the game.
         me.state.change(me.state.PLAY);
