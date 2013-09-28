@@ -1,16 +1,18 @@
+/* the in game stuff*/
 game.PlayScreen = me.ScreenObject.extend({
-	/**	
-	 *  action to perform on state change
-	 */
-	onResetEvent: function() {	
-      ; // TODO
-	},
-	
-	
-	/**	
-	 *  action to perform when leaving this screen (state change)
-	 */
-	onDestroyEvent: function() {
-	  ; // TODO
-	}
+ 
+    onResetEvent: function() {
+        // stuff to reset on state change
+        // load a level
+        me.levelDirector.loadLevel("level1");
+    },
+ 
+    /* ---
+ 
+    action to perform when game is finished (state change)
+ 
+    --- */
+    onDestroyEvent: function() {
+    }
+ 
 });
