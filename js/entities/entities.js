@@ -1,7 +1,7 @@
 /*------------------- 
 a player entity
 -------------------------------- */
-game.PlayerEntity = me.ObjectEntity.extend({
+game.AGravSupportEntity = me.ObjectEntity.extend({
                 // Overload this so antigravity works properly
                 computeVelocity : function(vel) {
 
@@ -127,8 +127,10 @@ game.PlayerEntity = me.ObjectEntity.extend({
 			// returns the collision "vector"
 			return collision;
 
-		},
- 
+		}
+});
+
+game.PlayerEntity = game.AGravSupportEntity.extend({
     /* -----
  
     constructor
@@ -155,7 +157,9 @@ game.PlayerEntity = me.ObjectEntity.extend({
 
         // set the display to follow our position on both axis
         //me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
- 
+
+
+        this.maxVel.y = this.maxVel.y * 1.5;
     },
  
     /* -----
@@ -180,7 +184,6 @@ game.PlayerEntity = me.ObjectEntity.extend({
         }
         if (me.input.isKeyPressed('jump')) {
             // make sure we are not already jumping or falling
-            console.log(this.jumping, this.falling);
             if (!this.jumping && !this.falling) {
                 // set current vel to the maximum defined value
                 // gravity will then do the rest
@@ -188,7 +191,6 @@ game.PlayerEntity = me.ObjectEntity.extend({
                     this.vel.y = -this.maxVel.y * me.timer.tick;
                 else 
                     this.vel.y = +this.maxVel.y * me.timer.tick;
-                console.log(this.vel.y);
                 // set the jumping flag
                 this.jumping = true;
             }
@@ -208,6 +210,31 @@ game.PlayerEntity = me.ObjectEntity.extend({
         // else inform the engine we did not perform
         // any update (e.g. position, animation)
         return false;
+    },
+    
+    updateMovement: function() {
+        var collision;
+        if (this.collidable) {
+            this.computeVelocity(this.vel);
+            collision = this.collisionMap.checkCollision(this.collisionBox, this.vel);
+            var tile;
+            if (collision.xprop.type == 'collectable') {
+                tile = collision.xtile;
+                if (tile) {
+                    me.game.currentLevel.getLayerByName("collision").clearTile(tile.col, tile.row);
+                    me.game.currentLevel.getLayerByName("Background").clearTile(tile.col, tile.row);
+                }
+            }
+            if (collision.xprop.type == 'exit') {
+                tile = collision.xtile;
+                if (tile) {
+                    me.levelDirector.loadLevel("level2");
+                }
+            }
+        }
+        this.parent()
+        //var tw = 40;
+            //console.log(tile.tileId == 18);
     }
  
 });
