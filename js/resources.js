@@ -5,8 +5,6 @@ game.resources = [
 	 * {name: "example", type:"image", src: "data/img/example.png"},
 	 */
 	 {name: "tiles", type:"image", src: "data/img/tiles.png"},
-        // the main player spritesheet
-        {name: "gripe_run_right", type:"image", src: "data/img/sprite/gripe_run_right.png"},
    
 	
 	/* Atlases 

@@ -8,14 +8,25 @@ game.PlayerEntity = me.ObjectEntity.extend({
     constructor
  
     ------ */
- 
+
     init: function(x, y, settings) {
         // call the constructor
         this.parent(x, y, settings);
  
         // set the default horizontal & vertical speed (accel vector)
         this.setVelocity(3, 15);
- 
+        
+        if (settings.grav == 1) {
+            this.gravity = 0.98;
+            this.renderable.addAnimation("walk", [14,15,16]);
+        }
+        if (settings.grav == -1) {
+            this.gravity = -0.98;
+            var tw = 40;
+            this.renderable.addAnimation("walk", [tw+14,tw+15,tw+16]);
+        }
+        this.renderable.setCurrentAnimation("walk");
+
         // set the display to follow our position on both axis
         me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
  
