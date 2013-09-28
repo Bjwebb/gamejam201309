@@ -39,11 +39,12 @@ var game = {
 
        // add our player entity in the entity pool
        me.entityPool.add("mainPlayer", game.PlayerEntity);
+       me.entityPool.add("mainPlayer2", game.PlayerEntity);
                  
        // enable the keyboard
        me.input.bindKey(me.input.KEY.LEFT,  "left");
        me.input.bindKey(me.input.KEY.RIGHT, "right");
-       me.input.bindKey(me.input.KEY.X,     "jump", true);
+       me.input.bindKey(me.input.KEY.X,     "jump");
 
         // Start the game.
         me.state.change(me.state.PLAY);
