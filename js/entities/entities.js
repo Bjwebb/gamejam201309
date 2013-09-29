@@ -261,14 +261,18 @@ game.PlayerEntity = game.ModObjectEntity.extend({
                     if(this.pos.y + 16 > tile.pos.y) {
                         me.levelDirector.reloadLevel();
                         // FIXME
+                        if (me.levelDirector.getCurrentLevelId() == "level1") {
                         me.game.viewport.pos.y = 32;
+                        }
                     }
                 }
                 if (prop.type == 'highdeath') {
                     if(this.pos.y - 16 < tile.pos.y) {
                         me.levelDirector.reloadLevel();
                         // FIXME
+                        if (me.levelDirector.getCurrentLevelId() == "level1") {
                         me.game.viewport.pos.y = 32;
+                        }
                     }
                 }
             }
